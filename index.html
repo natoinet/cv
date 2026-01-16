@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infographic CV – All Cards</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --right-bg: #0f1928;
+            --left-bg: #43515f;
+            /* Darken card backgrounds further for more discreet section cards */
+            --card-bg: #1c2b3a;
+            --line-col: #374b62;
+            --text-primary: #ffffff;
+            --text-secondary: #b4bfcc;
+            --skill-empty: rgba(255, 255, 255, 0.2);
+            --blue: #5178B6;
+            --orange: #F8AE5A;
+            --teal: #39B3B0;
+            --red: #C33C39;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Open Sans', sans-serif;
+            background: var(--right-bg);
+            color: var(--text-secondary);
+        }
+
+        .cv-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar {
+            width: 26%;
+            background: var(--left-bg);
+            padding: 18px 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-primary);
+            border-right: 1px solid var(--line-col);
+        }
+
+        .avatar {
+            width: 160px;
+            height: 190px;
+            border-radius: 50% / 60%;
+            border: 4px solid var(--card-bg);
+            margin-bottom: 10px;
+            background: var(--line-col);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50% / 60%;
+        }
+
+        .sidebar-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            letter-spacing: 1px;
+            margin: 0 0 6px 0;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+        .contact {
+            width: 100%;
+            margin-bottom: 12px;
+            padding: 0;
+        }
+
+        .contact li {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+            font-size: 0.8rem;
+            color: var(--text-primary);
+        }
+
+        .contact svg {
+            width: 14px;
+            height: 14px;
+            margin-right: 8px;
+            fill: var(--text-primary);
+            flex-shrink: 0;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .languages {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .languages h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .languages ul {
+            padding: 0;
+            margin: 0;
+        }
+
+        .languages li {
+            list-style: none;
+            margin-bottom: 2px;
+            position: relative;
+            padding-left: 18px;
+            font-size: 0.84rem;
+            color: var(--text-primary);
+        }
+
+        .languages li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 4px;
+            height: 4px;
+            background: var(--text-primary);
+            border-radius: 1px;
+        }
+
+        .skills {
+            width: 100%;
+            padding: 0;
+            margin-bottom: 12px;
+        }
+
+        .skills h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 8px 0 4px 0;
+            letter-spacing: 1px;
+        }
+
+        .skill-group {
+            margin-bottom: 5px;
+        }
+
+        .skill-group h4 {
+            font-size: 0.86rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .skill {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .skill-name {
+            font-size: 0.84rem;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .skill-level {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: auto;
+        }
+
+        .skill-level span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--skill-empty);
+        }
+
+        .skill-level span.filled {
+            background: var(--text-primary);
+        }
+
+        .skill-level .rating-score {
+            margin-left: 4px;
+            font-size: 0.72rem;
+            color: var(--text-primary);
+            /* Align rating numbers vertically with the dots */
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .main-content {
+            flex: 1;
+            width: auto;
+            padding: 22px 0 22px 35px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-secondary);
+        }
+
+        .job-title-wide {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+            text-align: center;
+            margin: 0 0 16px 0;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 25px;
+        }
+
+        .left-col {
+            flex-basis: 45%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-col {
+            flex-basis: 55%;
+        }
+
+        /* Card styling for all sections */
+        .card {
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        /* Keep the profile card using the original medium tone to ensure
+           the photo and header remain distinct from other cards. */
+        .card.profile {
+            background: #3b4c5b;
+        }
+
+        .card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 0.84rem;
+            line-height: 1.15;
+            color: var(--text-primary);
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: var(--line-col);
+            margin: 10px 0 15px;
+        }
+
+        .icon-box {
+            width: 22px;
+            height: 22px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .icon-box svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--text-primary);
+        }
+
+        .education-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--text-primary);
+            flex-shrink: 0;
+        }
+
+        .education-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .education-details {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding-left: 10px;
+        }
+
+        .edu-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edu-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        .edu-subtitle {
+            font-size: 0.78rem;
+            color: var(--text-primary);
+            opacity: 0.8;
+        }
+
+        .edu-dates {
+            font-size: 0.78rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .skill-rating {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .skill-rating .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--skill-empty);
+        }
+
+        .skill-rating .dot.filled {
+            background: var(--text-primary);
+        }
+
+        .skill-rating .rating-score {
+            margin-left: 4px;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        /* Work cards inside a card */
+        .work-cards {
+            margin-top: 10px;
+        }
+
+        .work-card {
+            background: var(--card-bg);
+            border-left: 4px solid var(--line-col);
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+
+        .work-card.c1 {
+            border-left-color: var(--blue);
+        }
+
+        .work-card.c2 {
+            border-left-color: var(--orange);
+        }
+
+        .work-card.c3 {
+            border-left-color: var(--teal);
+        }
+
+        .work-card.c4 {
+            border-left-color: var(--red);
+        }
+
+        .work-card h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 4px 0;
+        }
+
+        .work-card .company-name {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .work-card .work-dates {
+            font-size: 0.75rem;
+            font-style: italic;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .work-card ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .work-card li {
+            font-size: 0.75rem;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        @media print {
+            @page {
+                size: 297mm 210mm;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 297mm;
+                height: 210mm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .cv-container {
+                width: 297mm;
+                height: 210mm;
+            }
+
+            .sidebar {
+                height: 210mm;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            img {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cv-container">
+        <aside class="sidebar">
+            <h1 id="sidebar-name" class="sidebar-name"></h1>
+            <div class="avatar">
+                <img id="profile-image" alt="Profile Photo">
+            </div>
+            <ul class="contact">
+                <li>
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z" />
+                    </svg>
+                    <span id="phone"></span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" />
+                        <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                    </svg>
+                    <span id="location"></span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z" />
+                    </svg>
+                    <span id="email"></span>
+                </li>
+                <li>
+                    <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854zm4.943 12.248V6.169H2.542v7.225zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248S2.4 3.226 2.4 3.934c0 .694.521 1.248 1.327 1.248zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016l.016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225z" />
+                    </svg>
+                    <span id="linkedin"></span>
+                </li>
+            </ul>
+            <div class="languages">
+                <h3>Languages</h3>
+                <ul id="languages-list"></ul>
+            </div>
+            <div class="skills" id="sidebar-skills"></div>
+        </aside>
+        <main class="main-content">
+            <div id="job-title-wide" class="job-title-wide"></div>
+            <div class="content-wrapper">
+                <div class="left-col">
+                    <div class="card profile">
+                        <h3>
+                            <span class="icon-box"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                                </svg></span>
+                            Profile
+                        </h3>
+                        <p></p>
+                    </div>
+                    <div class="card" id="skills-main-section"></div>
+                    <div class="card" id="education-section"></div>
+                </div>
+                <div class="right-col">
+                    <div class="card work-card-wrapper">
+                        <h3>
+                            <span class="icon-box"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v1.384l7.614 2.03a1.5 1.5 0 0 0 .772 0L16 5.884V4.5A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5" />
+                                    <path
+                                        d="M0 12.5A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5V6.85L8.129 8.947a.5.5 0 0 1-.258 0L0 6.85z" />
+                                </svg></span>
+                            Work Experience
+                        </h3>
+                        <div class="divider"></div>
+                        <div class="work-cards" id="work-cards"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        window.ASSET_PATH = 'assets/'; 
+    </script>
+    <script src="cv_script.js"></script>
+
+</body>
+
+</html>

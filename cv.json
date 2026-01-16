@@ -1,0 +1,171 @@
+{
+    "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+    "basics": {
+        "name": "Antoine Brunel",
+        "label": "Remote Python Developer",
+        "image": "profile-photo.png",
+        "email": "",
+        "phone": "",
+        "url": "https://antoinebrunel.com",
+        "summary": "Remote-first Python Developer with a strong foundation in Software Development (C#, Java) and over a decade of experience in Technical Strategy and Data Analysis using Python. Currently pivoting back to a dedicated Backend Developer role, leveraging extensive experience in Healthtech environments and a deep understanding of software quality, reliability, and Agile methodologies.",
+        "location": {
+            "city": "Barcelona",
+            "countryCode": "ES",
+            "region": "Spain"
+        },
+        "profiles": [
+            {
+                "network": "LinkedIn",
+                "username": "antoinebrunel",
+                "url": "https://linkedin.com/in/antoinebrunel"
+            }
+        ]
+    },
+    "work": [
+        {
+            "name": "Freelance / SEO Conversion",
+            "position": "Senior Technical Consultant & Python Developer",
+            "startDate": "2010-01-01",
+            "endDate": "2023-12-31",
+            "highlights": [
+                "Django Backend: Architected app to harvest Twitter data.",
+                "Backend Engineering: Developed rank-tracking app (CherryPy).",
+                "Python Automation: Scripts (Pandas, Scrapy) for data analysis.",
+                "Healthtech: Partnered with Clinica Eugin & Mutuelle-conseil.",
+                "Technical Specs: Authored detailed specifications for cnseil.",
+                "Technical Specs: Authored detailed specifications for backend migrations."
+            ]
+        },
+        {
+            "name": "Futurlink",
+            "position": "Scrum Master & Developer (C# / PHP)",
+            "startDate": "2008-01-01",
+            "endDate": "2009-12-31",
+            "highlights": [
+                "Led a squad of 6 developers as Scrum Master.",
+                "Developed Windows desktop application using C#."
+            ]
+        },
+        {
+            "name": "Indra Space",
+            "position": "Test Responsible & Java Developer",
+            "startDate": "2006-01-01",
+            "endDate": "2007-12-31",
+            "highlights": [
+                "Validation of Mission Processor Uplink System (GALILEO).",
+                "Programmed complex test algorithms in Java."
+            ]
+        },
+        {
+            "name": "ABB France",
+            "position": "Software Developer (C#)",
+            "startDate": "2003-01-01",
+            "endDate": "2005-12-31",
+            "highlights": [
+                "Engineered C# desktop app integrating computer vision."
+            ]
+        }
+    ],
+    "education": [
+        {
+            "institution": "UAB University",
+            "area": "Translation studies",
+            "studyType": "MA",
+            "startDate": "2021-09-01",
+            "endDate": "2022-12-31"
+        },
+        {
+            "institution": "Paul-Valéry University",
+            "area": "Philosophy",
+            "studyType": "BA - 3rd year",
+            "startDate": "2019-09-01",
+            "endDate": "2012-12-31"
+        },
+        {
+            "institution": "UAB University",
+            "area": "Digital Marketing",
+            "studyType": "Master",
+            "startDate": "2011-01-01",
+            "endDate": "2012-12-31"
+        },
+        {
+            "institution": "Brunel University",
+            "area": "Systems Engineering",
+            "studyType": "BEng",
+            "startDate": "1999-01-01",
+            "endDate": "2002-12-31"
+        }
+    ],
+    "skills": [
+        {
+            "name": "Python (Django, Pandas)",
+            "level": "5/5",
+            "keywords": [
+                "Programming"
+            ]
+        },
+        {
+            "name": "PostgreSQL / MongoDB",
+            "level": "4/5",
+            "keywords": [
+                "Programming"
+            ]
+        },
+        {
+            "name": "C# / Java",
+            "level": "4/5",
+            "keywords": [
+                "Programming"
+            ]
+        },
+        {
+            "name": "Problem-Solving",
+            "level": "5/5",
+            "keywords": [
+                "Core Competencies"
+            ]
+        },
+        {
+            "name": "System Architecture",
+            "level": "4/5",
+            "keywords": [
+                "Core Competencies"
+            ]
+        },
+        {
+            "name": "Agile / Scrum Master",
+            "level": "4/5",
+            "keywords": [
+                "Core Competencies"
+            ]
+        },
+        {
+            "name": "Reliability & Testing",
+            "level": "4/5",
+            "keywords": [
+                "Tools & Platforms"
+            ]
+        },
+        {
+            "name": "GCP / Docker",
+            "level": "4/5",
+            "keywords": [
+                "Tools & Platforms"
+            ]
+        }
+    ],
+    "languages": [
+        {
+            "language": "English",
+            "fluency": "Bilingual"
+        },
+        {
+            "language": "Spanish",
+            "fluency": "Bilingual"
+        },
+        {
+            "language": "French",
+            "fluency": "Native"
+        }
+    ]
+}
