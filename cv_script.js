@@ -108,6 +108,7 @@ window.addEventListener('DOMContentLoaded', async function () {
             skillsByGroup[g].push(skill);
         });
 
+
         // Sidebar Skills
         const sidebarSkillsEl = document.getElementById('sidebar-skills');
         if (sidebarSkillsEl) {
@@ -153,7 +154,7 @@ window.addEventListener('DOMContentLoaded', async function () {
             iconBox.className = 'icon-box';
             iconBox.innerHTML = '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364zm13.37 9.019.528.026.287.445.445.287.026.529L15 13l-.242.471-.026.529-.445.287-.287.445-.529.026L13 15l-.471-.242-.529-.026-.287-.445-.445-.287-.026-.529L11 13l.242-.471.026-.529.445-.287.287-.445.529-.026L13 11z"/></svg>';
             header.appendChild(iconBox);
-            header.insertAdjacentText('beforeend', 'Skills & Mords');
+            header.insertAdjacentText('beforeend', 'Skills & More');
             skillsSection.appendChild(header);
             const divider = document.createElement('div');
             divider.className = 'divider';
@@ -268,8 +269,7 @@ window.addEventListener('DOMContentLoaded', async function () {
             });
         }
 
-        // --- TIMELINE (WORK EXPERIENCE) ---
-        // Logos removed as requested. Pure text layout.
+        // --- TIMELINE (Work Experience - Compact Mode) ---
         const timelineEl = document.getElementById('work-cards');
         if (timelineEl) {
             timelineEl.innerHTML = '';
@@ -278,29 +278,42 @@ window.addEventListener('DOMContentLoaded', async function () {
                 const card = document.createElement('div');
                 card.className = `work-card ${colours[idx % colours.length]}`;
 
-                const h4 = document.createElement('h4');
-                h4.textContent = job.position;
-                card.appendChild(h4);
-
-                const cDiv = document.createElement('div');
-                cDiv.className = 'company-name';
-                cDiv.textContent = job.name; // Just text, no logos
-                card.appendChild(cDiv);
-
-                const dateDiv = document.createElement('div');
-                dateDiv.className = 'work-dates';
+                // 1. Prepare the Date String FIRST
                 const st = job.startDate ? job.startDate.split('-')[0] : '';
                 const en = job.endDate ? job.endDate.split('-')[0] : '';
                 let dS = '';
                 if (!en) dS = 'Present'; else if (!st) dS = en; else dS = `${st} – ${en}`;
-                dateDiv.textContent = dS;
-                card.appendChild(dateDiv);
 
+                // 2. Create the "Meta Row" (Year & Company)
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'work-meta';
+                // Style: "2010-2023 | Company Name"
+                // We use flexbox to align them nicely or just text. Let's use clean text.
+                metaDiv.style.fontSize = '0.8rem';
+                metaDiv.style.color = 'var(--text-secondary)';
+                metaDiv.style.marginBottom = '2px'; // Tight spacing to the title
+
+                // Content: Bold Date + Separator + Company
+                metaDiv.innerHTML = `<span style="color:var(--text-primary); font-weight:600;">${dS}</span> &nbsp;|&nbsp; <span class="company-name">${job.name}</span>`;
+                card.appendChild(metaDiv);
+
+                // 3. Job Title (Now on the second line)
+                const h4 = document.createElement('h4');
+                h4.textContent = job.position;
+                h4.style.margin = '0 0 6px 0'; // Remove top margin, keep small bottom margin
+                h4.style.fontSize = '0.95rem'; // Slight tweak to fit better
+                card.appendChild(h4);
+
+                // 4. Highlights (The list)
                 if (job.highlights && job.highlights.length) {
                     const ul = document.createElement('ul');
+                    // OPTIMIZATION: Tighter list spacing
+                    ul.style.marginTop = '4px';
+                    ul.style.marginBottom = '0';
                     job.highlights.forEach(h => {
                         const li = document.createElement('li');
                         li.textContent = h;
+                        li.style.marginBottom = '1px'; // Very tight bullet points
                         ul.appendChild(li);
                     });
                     card.appendChild(ul);
