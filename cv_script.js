@@ -1,106 +1,31 @@
 window.addEventListener('DOMContentLoaded', async function () {
     try {
+        // 1. CONFIG
+        const assetPath = window.ASSET_PATH || '';
         const urlParams = new URLSearchParams(window.location.search);
         const usePrivate = urlParams.has('private');
 
         let cv;
 
+        // 2. LOAD DATA
         if (usePrivate) {
             try {
-                // Try to fetch the local private file
                 const response = await fetch('cv.private.json');
                 if (!response.ok) throw new Error("Private file not found");
                 cv = await response.json();
                 console.log("🔒 Loaded PRIVATE Data");
             } catch (e) {
-                // Fallback if private file is missing (e.g. on live site)
-                console.warn("Could not load private data, falling back to public.");
+                console.warn("Fallback to public");
                 const response = await fetch('cv.json');
                 cv = await response.json();
             }
         } else {
-            // Default to public
             const response = await fetch('cv.json');
             cv = await response.json();
             console.log("🌍 Loaded PUBLIC Data");
         }
 
-        // 1. ASSET CONFIG: Grab asset path (defaults to empty string if undefined)
-        const assetPath = window.ASSET_PATH || '';
-
-        function parseRating(level) {
-            if (!level) return 0;
-            if (typeof level === 'string' && level.indexOf('/') !== -1) {
-                return parseInt(level.split('/')[0], 10);
-            }
-            return parseInt(level, 10) || 0;
-        }
-
-        // --- BASIC INFO ---
-        const nameEl = document.getElementById('sidebar-name');
-        if (nameEl) nameEl.textContent = cv.basics?.name?.toUpperCase() || '';
-        const profileImg = document.getElementById('profile-image');
-        if (profileImg && cv.basics?.image) {
-            const isUrl = cv.basics.image.startsWith('http');
-            profileImg.src = isUrl ? cv.basics.image : (assetPath + cv.basics.image);
-        }
-        const jobWideEl = document.getElementById('job-title-wide');
-        if (jobWideEl) jobWideEl.textContent = cv.basics?.label || '';
-        const summaryEl = document.querySelector('.card.profile p');
-        if (summaryEl) summaryEl.textContent = cv.basics?.summary || '';
-
-        // Contact
-        // Helper to update text OR hide the entire list item if empty
-        function updateContact(id, value) {
-            const el = document.getElementById(id);
-            if (!el) return;
-
-            const parentLi = el.closest('li');
-
-            if (value && value.trim() !== "") {
-                el.textContent = value;
-                if (parentLi) parentLi.style.display = 'flex';
-            } else {
-                if (parentLi) parentLi.style.display = 'none';
-            }
-        }
-
-        // Apply to contact fields
-        updateContact('phone', cv.basics?.phone);
-        updateContact('email', cv.basics?.email);
-
-        const locationEl = document.getElementById('location');
-        if (locationEl) {
-            const city = cv.basics?.location?.city || '';
-            const region = cv.basics?.location?.region || '';
-            const locStr = city && region ? `${city}, ${region}` : `${city}${region}`;
-            updateContact('location', locStr);
-        }
-
-        const linkedinEl = document.getElementById('linkedin');
-        if (linkedinEl) {
-            let link = '';
-            if (cv.basics?.profiles?.length) {
-                const p = cv.basics.profiles[0];
-                link = p.url || p.username || '';
-            }
-            updateContact('linkedin', link);
-        }
-
-        // --- LANGUAGES ---
-        const langList = document.getElementById('languages-list');
-        if (langList) {
-            langList.innerHTML = '';
-            (cv.languages || []).forEach(lang => {
-                const li = document.createElement('li');
-                let text = lang.language || '';
-                if (lang.fluency) text += ' (' + lang.fluency + ')';
-                li.textContent = text;
-                langList.appendChild(li);
-            });
-        }
-
-        // --- SKILLS ---
+        // --- 1. PRE-CALCULATE SKILLS (For Summary Append) ---
         const skillsByGroup = {};
         (cv.skills || []).forEach(skill => {
             const g = (skill.keywords && skill.keywords.length) ? skill.keywords[0] : 'Other';
@@ -108,36 +33,138 @@ window.addEventListener('DOMContentLoaded', async function () {
             skillsByGroup[g].push(skill);
         });
 
+        // Remove Soft Skills from sidebar and prep string for summary
+        const softGroupKey = 'Core Competencies';
+        const softSkillsGroup = skillsByGroup[softGroupKey] || [];
+        const softSkillsText = softSkillsGroup.map(s => s.name).join(', ');
+        if (softSkillsText) delete skillsByGroup[softGroupKey];
 
-        // Sidebar Skills
+        function parseRating(level) {
+            if (!level) return 0;
+            if (typeof level === 'string' && level.indexOf('/') !== -1) return parseInt(level.split('/')[0], 10);
+            return parseInt(level, 10) || 0;
+        }
+
+        // --- BASIC INFO ---
+        const nameEl = document.getElementById('sidebar-name');
+        if (nameEl) nameEl.textContent = cv.basics?.name?.toUpperCase() || '';
+        const jobWideEl = document.getElementById('job-title-wide');
+        if (jobWideEl) jobWideEl.textContent = cv.basics?.label || '';
+
+        // Summary Injection (Skills + Languages)
+        const summaryEl = document.querySelector('.card.profile p');
+        if (summaryEl) {
+            let summaryHTML = cv.basics?.summary || '';
+
+            if (cv.languages && cv.languages.length > 0) {
+                // Create string: "English (Bilingual), Spanish (Native)..."
+                const langString = cv.languages.map(l => {
+                    return `${l.language} ${l.fluency ? `(${l.fluency})` : ''}`;
+                }).join(', ');
+
+                // Add to summary (New line)
+                summaryHTML += `<br><strong style="color:var(--teal)">Languages:</strong> ${langString}.`;
+            }
+
+            // 1. Append Core Competencies (Cyberpunk Teal)
+            if (softSkillsText) {
+                summaryHTML += `<br><strong style="color:var(--teal)">Core Competencies:</strong> ${softSkillsText}.`;
+            }
+
+            summaryEl.innerHTML = summaryHTML;
+        }
+
+        // Profile Image
+        const profileImg = document.getElementById('profile-image');
+        if (profileImg && cv.basics?.image) {
+            const isUrl = cv.basics.image.startsWith('http');
+            profileImg.src = isUrl ? cv.basics.image : (assetPath + cv.basics.image);
+        }
+
+        // Contact Visibility
+        function updateContact(id, value) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const parentLi = el.closest('li');
+            if (value && value.trim() !== "") {
+                el.textContent = value;
+                if (parentLi) parentLi.style.display = 'flex';
+            } else {
+                if (parentLi) parentLi.style.display = 'none';
+            }
+        }
+        updateContact('phone', cv.basics?.phone);
+        updateContact('email', cv.basics?.email);
+
+        const loc = document.getElementById('location');
+        if (loc) {
+            const c = cv.basics?.location?.city || '';
+            const r = cv.basics?.location?.region || '';
+            updateContact('location', c && r ? `${c}, ${r}` : `${c}${r}`);
+        }
+
+        const linked = document.getElementById('linkedin');
+        if (linked) {
+            let l = '';
+            if (cv.basics?.profiles?.length) l = cv.basics.profiles[0].url || cv.basics.profiles[0].username || '';
+            updateContact('linkedin', l);
+        }
+
+        /*
+        // --- LANGUAGES ---
+        const langList = document.getElementById('languages-list');
+        if (langList) {
+            langList.innerHTML = '';
+            (cv.languages || []).forEach(l => {
+                const li = document.createElement('li');
+                li.textContent = l.language + (l.fluency ? ` (${l.fluency})` : '');
+                langList.appendChild(li);
+            });
+        }
+        */
+
+        // --- SIDEBAR SKILLS ---
         const sidebarSkillsEl = document.getElementById('sidebar-skills');
         if (sidebarSkillsEl) {
-            sidebarSkillsEl.innerHTML = '<h3>Skills</h3>';
+            sidebarSkillsEl.innerHTML = '<h3 style="margin-bottom:10px;">Skills</h3>'; // Tighter header
+
             Object.keys(skillsByGroup).forEach(group => {
                 const gDiv = document.createElement('div');
                 gDiv.className = 'skill-group';
+                gDiv.style.marginBottom = '12px'; // FORCE: Reduce gap between groups (Programming -> Tools)
+
                 const h4 = document.createElement('h4');
                 h4.textContent = group;
+                h4.style.margin = '0 0 4px 0'; // FORCE: Tighten group header
+                h4.style.fontSize = '0.9rem';
                 gDiv.appendChild(h4);
+
                 skillsByGroup[group].forEach(skill => {
                     const sDiv = document.createElement('div');
                     sDiv.className = 'skill';
+                    sDiv.style.marginBottom = '3px'; // FORCE: Tighten individual skill rows
+                    sDiv.style.display = 'flex';
+                    sDiv.style.justifyContent = 'space-between';
+                    sDiv.style.alignItems = 'center';
+
                     const nameSpan = document.createElement('span');
                     nameSpan.className = 'skill-name';
                     nameSpan.textContent = skill.name;
+                    nameSpan.style.fontSize = '0.85rem'; // FORCE: Smaller font
                     sDiv.appendChild(nameSpan);
+
                     const lvlDiv = document.createElement('div');
                     lvlDiv.className = 'skill-level';
+                    // FORCE: Scale dots down to 85% size
+                    lvlDiv.style.transform = 'scale(0.85)';
+                    lvlDiv.style.transformOrigin = 'right center';
+
                     const rating = parseRating(skill.level);
                     for (let i = 0; i < 5; i++) {
                         const dot = document.createElement('span');
                         if (i < rating) dot.classList.add('filled');
                         lvlDiv.appendChild(dot);
                     }
-                    const ratingSpan = document.createElement('span');
-                    ratingSpan.className = 'rating-score';
-                    ratingSpan.textContent = skill.level;
-                    lvlDiv.appendChild(ratingSpan);
                     sDiv.appendChild(lvlDiv);
                     gDiv.appendChild(sDiv);
                 });
@@ -145,54 +172,69 @@ window.addEventListener('DOMContentLoaded', async function () {
             });
         }
 
-        // Main Skills Section
-        const skillsSection = document.getElementById('skills-main-section');
-        if (skillsSection) {
-            skillsSection.innerHTML = '';
-            const header = document.createElement('h3');
-            const iconBox = document.createElement('span');
-            iconBox.className = 'icon-box';
-            iconBox.innerHTML = '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M.102 2.223A3.004 3.004 0 0 0 3.78 5.897l6.341 6.252A3.003 3.003 0 0 0 13 16a3 3 0 1 0-.851-5.878L5.897 3.781A3.004 3.004 0 0 0 2.223.1l2.141 2.142L4 4l-1.757.364zm13.37 9.019.528.026.287.445.445.287.026.529L15 13l-.242.471-.026.529-.445.287-.287.445-.529.026L13 15l-.471-.242-.529-.026-.287-.445-.445-.287-.026-.529L11 13l.242-.471.026-.529.445-.287.287-.445.529-.026L13 11z"/></svg>';
-            header.appendChild(iconBox);
-            header.insertAdjacentText('beforeend', 'Skills & More');
-            skillsSection.appendChild(header);
-            const divider = document.createElement('div');
-            divider.className = 'divider';
-            skillsSection.appendChild(divider);
-            Object.keys(skillsByGroup).forEach(group => {
-                const groupDiv = document.createElement('div');
-                groupDiv.className = 'skill-group';
+        // --- WORK EXPERIENCE (SPLIT COLUMNS) ---
+        const col1 = document.getElementById('work-col-1');
+        const col2 = document.getElementById('work-col-2');
+
+        if (col1 && col2 && cv.work) {
+            col1.innerHTML = '';
+            col2.innerHTML = '';
+            const colours = ['c1', 'c2', 'c3', 'c4'];
+
+            // CONFIG: How many items in the first column?
+            const splitIndex = 2;
+
+            cv.work.forEach((job, idx) => {
+                const card = document.createElement('div');
+                card.className = `work-card ${colours[idx % colours.length]}`;
+
+                // Date & Meta
+                const st = job.startDate ? job.startDate.split('-')[0] : '';
+                const en = job.endDate ? job.endDate.split('-')[0] : '';
+                let dS = !en ? 'Present' : (!st ? en : `${st} – ${en}`);
+
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'work-meta';
+                metaDiv.style.fontSize = '0.8rem';
+                metaDiv.style.color = 'var(--text-secondary)';
+                metaDiv.style.marginBottom = '2px';
+                metaDiv.innerHTML = `<span style="color:var(--text-primary); font-weight:600;">${dS}</span> &nbsp;|&nbsp; <span class="company-name">${job.name}</span>`;
+                card.appendChild(metaDiv);
+
                 const h4 = document.createElement('h4');
-                h4.textContent = group;
-                groupDiv.appendChild(h4);
-                skillsByGroup[group].forEach(skill => {
-                    const sDiv = document.createElement('div');
-                    sDiv.className = 'skill';
-                    const nameSpan = document.createElement('span');
-                    nameSpan.className = 'skill-name';
-                    nameSpan.textContent = skill.name;
-                    sDiv.appendChild(nameSpan);
-                    const ratingDiv = document.createElement('div');
-                    ratingDiv.className = 'skill-rating';
-                    const rating = parseRating(skill.level);
-                    for (let i = 0; i < 5; i++) {
-                        const dotSpan = document.createElement('span');
-                        dotSpan.className = 'dot';
-                        if (i < rating) dotSpan.classList.add('filled');
-                        ratingDiv.appendChild(dotSpan);
-                    }
-                    const ratingScore = document.createElement('span');
-                    ratingScore.className = 'rating-score';
-                    ratingScore.textContent = skill.level;
-                    ratingDiv.appendChild(ratingScore);
-                    sDiv.appendChild(ratingDiv);
-                    groupDiv.appendChild(sDiv);
-                });
-                skillsSection.appendChild(groupDiv);
+                h4.textContent = job.position;
+                h4.style.margin = '0 0 6px 0';
+                h4.style.fontSize = '0.95rem';
+                card.appendChild(h4);
+
+                if (job.highlights && job.highlights.length) {
+                    const ul = document.createElement('ul');
+                    ul.style.marginTop = '4px';
+                    ul.style.marginBottom = '0';
+                    job.highlights.forEach(h => {
+                        const li = document.createElement('li');
+                        li.textContent = h;
+                        li.style.marginBottom = '1px';
+                        ul.appendChild(li);
+                    });
+                    card.appendChild(ul);
+                }
+
+                // Append to correct column
+                if (idx < splitIndex) {
+                    col1.appendChild(card);
+                } else {
+                    col2.appendChild(card);
+                }
             });
+
+            // Hide second column container if empty
+            if (cv.work.length <= splitIndex) {
+                if (col2.parentElement) col2.parentElement.style.display = 'none';
+            }
         }
 
-        // --- EDUCATION (Keeps Logos & Asset Path) ---
+        // --- EDUCATION ---
         const eduSection = document.getElementById('education-section');
         if (eduSection) {
             eduSection.innerHTML = '';
@@ -224,20 +266,13 @@ window.addEventListener('DOMContentLoaded', async function () {
                 const inst = (item.institution || '').toLowerCase();
                 let logo = null;
                 Object.keys(eduLogoMap).forEach(key => {
-                    if (inst.includes(key)) {
-                        logo = eduLogoMap[key];
-                    }
+                    if (inst.includes(key)) logo = eduLogoMap[key];
                 });
 
-                // Uses ASSET_PATH for Education logos
                 if (logo) {
-                    iconDiv.innerHTML =
-                        '<div style="background:#ffffff;border-radius:50%;width:28px;height:28px;overflow:hidden;display:flex;align-items:center;justify-content:center;">' +
-                        '<img src="' + assetPath + logo + '" alt="logo" style="width:100%;height:100%;object-fit:contain;" />' +
-                        '</div>';
+                    iconDiv.innerHTML = `<div style="background:#ffffff;border-radius:50%;width:28px;height:28px;overflow:hidden;display:flex;align-items:center;justify-content:center;"><img src="${assetPath}${logo}" alt="logo" style="width:100%;height:100%;object-fit:contain;" /></div>`;
                 } else {
-                    iconDiv.innerHTML =
-                        '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" width="28" height="28"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466z"/></svg>';
+                    iconDiv.innerHTML = '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" width="28" height="28"><path d="M8.211 2.047a.5.5 0 0 0-.422 0l-7.5 3.5a.5.5 0 0 0 .025.917l7.5 3a.5.5 0 0 0 .372 0L14 7.14V13a1 1 0 0 0-1 1v2h3v-2a1 1 0 0 0-1-1V6.739l.686-.275a.5.5 0 0 0 .025-.917z"/><path d="M4.176 9.032a.5.5 0 0 0-.656.327l-.5 1.7a.5.5 0 0 0 .294.605l4.5 1.8a.5.5 0 0 0 .372 0l4.5-1.8a.5.5 0 0 0 .294-.605l-.5-1.7a.5.5 0 0 0-.656-.327L8 10.466z"/></svg>';
                 }
                 itemDiv.appendChild(iconDiv);
 
@@ -255,13 +290,9 @@ window.addEventListener('DOMContentLoaded', async function () {
                 infoDiv.appendChild(subtitleDiv);
                 const datesDiv = document.createElement('div');
                 datesDiv.className = 'edu-dates';
-                const sYear = item.startDate ? item.startDate.split('-')[0] : '';
-                const eYear = item.endDate ? item.endDate.split('-')[0] : '';
-                let dateStr = '';
-                if (!eYear) dateStr = 'Current';
-                else if (!sYear) dateStr = eYear;
-                else dateStr = `${sYear} – ${eYear}`;
-                datesDiv.textContent = dateStr;
+                const sY = item.startDate ? item.startDate.split('-')[0] : '';
+                const eY = item.endDate ? item.endDate.split('-')[0] : '';
+                datesDiv.textContent = !eY ? 'Current' : (!sY ? eY : `${sY} – ${eY}`);
                 detailsDiv.appendChild(infoDiv);
                 detailsDiv.appendChild(datesDiv);
                 itemDiv.appendChild(detailsDiv);
@@ -269,57 +300,55 @@ window.addEventListener('DOMContentLoaded', async function () {
             });
         }
 
-        // --- TIMELINE (Work Experience - Compact Mode) ---
-        const timelineEl = document.getElementById('work-cards');
-        if (timelineEl) {
-            timelineEl.innerHTML = '';
-            const colours = ['c1', 'c2', 'c3', 'c4'];
-            (cv.work || []).forEach((job, idx) => {
-                const card = document.createElement('div');
-                card.className = `work-card ${colours[idx % colours.length]}`;
+        // --- ONLINE COURSES / CERTIFICATES (MOVED TO SIDEBAR) ---
+        const certsContainer = document.getElementById('sidebar-certs');
+        const certsData = cv.certificates || cv.courses || [];
 
-                // 1. Prepare the Date String FIRST
-                const st = job.startDate ? job.startDate.split('-')[0] : '';
-                const en = job.endDate ? job.endDate.split('-')[0] : '';
-                let dS = '';
-                if (!en) dS = 'Present'; else if (!st) dS = en; else dS = `${st} – ${en}`;
+        if (certsContainer && certsData.length > 0) {
+            certsContainer.style.display = 'block';
 
-                // 2. Create the "Meta Row" (Year & Company)
-                const metaDiv = document.createElement('div');
-                metaDiv.className = 'work-meta';
-                // Style: "2010-2023 | Company Name"
-                // We use flexbox to align them nicely or just text. Let's use clean text.
-                metaDiv.style.fontSize = '0.8rem';
-                metaDiv.style.color = 'var(--text-secondary)';
-                metaDiv.style.marginBottom = '2px'; // Tight spacing to the title
+            // FORCE: Override any CSS margins
+            certsContainer.style.marginTop = '15px';
+            certsContainer.innerHTML = '';
 
-                // Content: Bold Date + Separator + Company
-                metaDiv.innerHTML = `<span style="color:var(--text-primary); font-weight:600;">${dS}</span> &nbsp;|&nbsp; <span class="company-name">${job.name}</span>`;
-                card.appendChild(metaDiv);
+            const header = document.createElement('h3');
+            header.textContent = 'Certificates';
+            header.style.marginBottom = '8px'; // Tight header
+            certsContainer.appendChild(header);
 
-                // 3. Job Title (Now on the second line)
-                const h4 = document.createElement('h4');
-                h4.textContent = job.position;
-                h4.style.margin = '0 0 6px 0'; // Remove top margin, keep small bottom margin
-                h4.style.fontSize = '0.95rem'; // Slight tweak to fit better
-                card.appendChild(h4);
+            const ul = document.createElement('ul');
+            ul.style.listStyle = 'none';
+            ul.style.padding = '0';
+            ul.style.margin = '0'; // Remove default UL margin
 
-                // 4. Highlights (The list)
-                if (job.highlights && job.highlights.length) {
-                    const ul = document.createElement('ul');
-                    // OPTIMIZATION: Tighter list spacing
-                    ul.style.marginTop = '4px';
-                    ul.style.marginBottom = '0';
-                    job.highlights.forEach(h => {
-                        const li = document.createElement('li');
-                        li.textContent = h;
-                        li.style.marginBottom = '1px'; // Very tight bullet points
-                        ul.appendChild(li);
-                    });
-                    card.appendChild(ul);
+            certsData.forEach(c => {
+                const li = document.createElement('li');
+                li.style.marginBottom = '8px'; // Tight rows
+                li.style.lineHeight = '1.2';
+
+                const title = document.createElement('div');
+                title.style.color = 'var(--text-primary)';
+                title.style.fontWeight = '500';
+                title.style.fontSize = '0.85rem';
+                title.textContent = c.name;
+                li.appendChild(title);
+
+                const meta = document.createElement('div');
+                meta.style.color = 'var(--text-secondary)';
+                meta.style.fontSize = '0.75rem';
+                meta.style.marginTop = '1px';
+
+                let metaText = c.issuer || '';
+                if (c.date) {
+                    const year = c.date.split('-')[0];
+                    metaText += metaText ? ` · ${year}` : year;
                 }
-                timelineEl.appendChild(card);
+                meta.textContent = metaText;
+                li.appendChild(meta);
+
+                ul.appendChild(li);
             });
+            certsContainer.appendChild(ul);
         }
     } catch (err) {
         console.error('Error loading CV data:', err);

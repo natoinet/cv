@@ -451,6 +451,52 @@
             margin-bottom: 2px;
         }
 
+        .sidebar h3 {
+            margin-top: 15px !important;
+            margin-bottom: 8px !important;
+            font-size: 1.1rem !important;
+        }
+
+        .sidebar h4 {
+            margin-top: 10px !important;
+            margin-bottom: 4px !important;
+            font-size: 0.9rem !important;
+        }
+
+        .skill-group {
+            margin-bottom: 2px !important;
+        }
+
+        .sidebar .skill {
+            margin-bottom: 2px !important;
+            min-height: auto !important;
+        }
+
+        .sidebar .skill-name {
+            font-size: 0.8rem !important;
+        }
+
+        .sidebar ul.contact-details {
+            margin-bottom: 10px !important;
+        }
+
+        .sidebar ul.contact-details li {
+            margin-bottom: 4px !important;
+        }
+
+        #sidebar-certs {
+            margin-top: 15px !important;
+        }
+
+        #sidebar-certs ul {
+            margin-top: 0 !important;
+            padding-left: 0 !important;
+        }
+
+        #sidebar-certs li {
+            margin-bottom: 8px !important;
+        }
+
         @media print {
             @page {
                 /* size: 297mm 210mm; */
@@ -550,42 +596,40 @@
                     <span id="linkedin"></span>
                 </li>
             </ul>
-            <div class="languages">
-                <h3>Languages</h3>
-                <ul id="languages-list"></ul>
-            </div>
             <div class="skills" id="sidebar-skills"></div>
+            <div class="sidebar-section" id="sidebar-certs" style="width:100%; margin-top:25px; display:none;">
+            </div>
         </aside>
         <main class="main-content">
             <div id="job-title-wide" class="job-title-wide"></div>
             <div class="content-wrapper">
+
                 <div class="left-col">
                     <div class="card profile">
-                        <h3>
-                            <span class="icon-box"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <h3><span class="icon-box"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
-                                </svg></span>
-                            Profile
-                        </h3>
+                                </svg></span>Profile</h3>
                         <p></p>
                     </div>
-                    <div class="card" id="skills-main-section"></div>
-                    <div class="card" id="education-section"></div>
-                </div>
-                <div class="right-col">
+
                     <div class="card work-card-wrapper">
-                        <h3>
-                            <span class="icon-box"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                        <h3><span class="icon-box"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                                     <path
                                         d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v1.384l7.614 2.03a1.5 1.5 0 0 0 .772 0L16 5.884V4.5A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5" />
                                     <path
                                         d="M0 12.5A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5V6.85L8.129 8.947a.5.5 0 0 1-.258 0L0 6.85z" />
-                                </svg></span>
-                            Work Experience
-                        </h3>
+                                </svg></span>Work Experience</h3>
                         <div class="divider"></div>
-                        <div class="work-cards" id="work-cards"></div>
+                        <div class="work-cards" id="work-col-1"></div>
                     </div>
+                </div>
+
+                <div class="right-col">
+                    <div class="card work-card-wrapper">
+                        <div class="work-cards" id="work-col-2"></div>
+                    </div>
+
+                    <div class="card" id="education-section"></div>
                 </div>
             </div>
         </main>

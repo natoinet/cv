@@ -96,6 +96,18 @@
             "endDate": "2002-12-31"
         }
     ],
+    "certificates": [
+        {
+            "name": "Certified ScrumMaster (CSM)",
+            "issuer": "Scrum Alliance",
+            "date": "2023-05-15"
+        },
+        {
+            "name": "Google Cloud Professional Architect",
+            "issuer": "Google",
+            "date": "2022-11-20"
+        }
+    ],
     "skills": [
         {
             "name": "Python (Django, Pandas)",
